@@ -1,5 +1,6 @@
-﻿name: Publicar Flutter Web
+name: Publicar Flutter Web
 
+# Quando roda: a cada envio para a branch main (ou manualmente)
 on:
   push:
     branches: [main]
@@ -15,19 +16,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Tarefa 1: compilar o app para web
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4          # baixa seu código
+      - uses: subosito/flutter-action@v2   # instala o Flutter
         with:
           channel: stable
-      - run: flutter pub get
+      - run: flutter pub get               # baixa os pacotes
+      # base-href = endereço da pasta onde o site vai ficar (nome do repositório)
       - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
 
+  # Tarefa 2: publicar o resultado
   deploy:
     needs: build
     runs-on: ubuntu-latest
